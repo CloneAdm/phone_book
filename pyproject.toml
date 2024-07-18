@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "phone-book"
+version = "0.1.0"
+description = ""
+authors = ["Швец Андрей <clone.spb@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = "^3.9.5"
+pathlib = "^1.0.1"
+beautifulsoup4 = "^4.12.3"
+aiofiles = "^24.1.0"
+colorlog = "^6.8.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
