@@ -59,12 +59,12 @@ def update_photo_links(html: str, contacts: list[Contact]) -> str:
     return updated_html
 
 
-async def download_photos(contacts: list[Contact]) -> None:
+async def download_photos(contacts: list[Contact], base_url:str) -> None:
     logger.debug("Скачивание фотографий...")
     async with aiohttp.ClientSession() as session:
         tasks = []
         for contact in contacts:
-            photo_url = URL + contact.photo_url
+            photo_url = base_url + contact.photo_url
             photo_path = PHOTO_DIR / Path(contact.photo_url).name
             contact.photo_path = str(photo_path)
             tasks.append(fetch_photo(session, photo_url, BASE_DIR / Path(photo_path)))
@@ -120,14 +120,14 @@ async def main(args):
             logger.debug(f"HTML файл {args.file} прочитан")
         else:
             # Скачивание HTML по URL
-            html = await fetch_html(URL)
+            html = await fetch_html(args.url)
 
         contacts: list[Contact] = parse_html(html)
 
         # Создание папок, если они не существуют
         os.makedirs(BASE_DIR / PHOTO_DIR, exist_ok=True)
 
-        await download_photos(contacts)
+        await download_photos(contacts, args.url)
 
         # Обновление HTML с новыми ссылками на фотографии и сохранение HTML с именем book_дата-время.html
         updated_html = update_photo_links(html, contacts)
@@ -148,5 +148,6 @@ async def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Парсер HTML контактов')
     parser.add_argument('--file', type=str, help='Путь к локальному HTML файлу')
+    parser.add_argument('--url', type=str, help='URL сайта с контактами' , default='http://10.0.2.30:2040/')
     main_args = parser.parse_args()
     asyncio.run(main(main_args))
